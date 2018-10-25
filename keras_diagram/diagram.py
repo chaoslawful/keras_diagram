@@ -22,7 +22,10 @@ class Node:
             return self.layer.__class__.__name__
 
     def _calculate_children(self):
-        layers = list(_flatten([node.inbound_layers for node in self.layer.inbound_nodes]))
+        # XXX: modified by wxz
+        # layers = list(_flatten([node.inbound_layers for node in self.layer.inbound_nodes]))
+        layers = list(_flatten([node.inbound_layers for node in self.layer._inbound_nodes]))
+        # XXX: ends here
         layers = [l.layers[-1] if issubclass(type(l), Model) else l for l in layers]
         return [Node(l) for l in layers]
 
@@ -87,6 +90,10 @@ class Canvas:
         return self.chars.shape[1]
 
     def append_to_bottom(self, text):
+        # XXX: added by wxz
+        if isinstance(text, bytes):
+            text = text.decode('utf-8')
+        # XXX: ends here
         new_height = self.height() + 1
         new_width = max(self.width(), len(text))
         self._expand((new_height, new_width))
@@ -132,26 +139,44 @@ class Arrows:
     def __init__(self, width):
         self.width = width
         self.arrows = []
-        self.line1 = create_string_buffer(' ' * width)
-        self.line2 = create_string_buffer(' ' * width)
+        # XXX: modified by wxz
+        # self.line1 = create_string_buffer(' ' * width)
+        # self.line2 = create_string_buffer(' ' * width)
+        self.line1 = create_string_buffer(b' ' * width)
+        self.line2 = create_string_buffer(b' ' * width)
+        # XXX: ends here
 
     def any(self):
         return self.line1.value.strip() and self.line2.value.strip()
 
     def draw(self, x1, x2):
         if x1 == x2:
-            self.line1[x1] = '|'
-            self.line2[x2] = '|'
+            # XXX: modified by wxz
+            # self.line1[x1] = '|'
+            # self.line2[x2] = '|'
+            self.line1[x1] = b'|'
+            self.line2[x2] = b'|'
+            # XXX: ends here
         elif x1 < x2:
-            self.line1[x1+1] = '\\'
-            self.line2[x2] = '|'
+            # XXX: modified by wxz
+            # self.line1[x1+1] = '\\'
+            # self.line2[x2] = '|'
+            self.line1[x1+1] = b'\\'
+            self.line2[x2] = b'|'
             length = (x2) - (x1+2) + 1
-            self.line1[x1+2:x2+1] = '_' * length
+            # self.line1[x1+2:x2+1] = '_' * length
+            self.line1[x1+2:x2+1] = b'_' * length
+            # XXX: ends here
         elif x1 > x2:
-            self.line1[x1-1] = '/'
-            self.line2[x2] = '|'
+            # XXX: modified by wxz
+            # self.line1[x1-1] = '/'
+            # self.line2[x2] = '|'
+            self.line1[x1-1] = b'/'
+            self.line2[x2] = b'|'
             length = (x1-2) - (x2) + 1
-            self.line1[x2:x1-2+1] = '_' * length
+            # self.line1[x2:x1-2+1] = '_' * length
+            self.line1[x2:x1-2+1] = b'_' * length
+            # XXX: ends here
 
 def _center_of(width):
     return int((width - 0.5)/2)
